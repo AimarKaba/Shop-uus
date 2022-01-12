@@ -62,7 +62,41 @@ namespace Shop.ApplicationServices.Services
 
             return null;
         }
+        public string ProcessUploadFile(CarsDto dto, Cars cars)
+        {
+            string uniqueFileName = null;
 
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                if (!Directory.Exists(_env.WebRootPath + "\\multipleFileUpload\\"))
+                {
+                    Directory.CreateDirectory(_env.WebRootPath + "\\multipleFileUpload\\");
+                }
+
+                foreach (var photo in dto.Files)
+                {
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "multipleFileUpload");
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        photo.CopyTo(fileStream);
+
+                        ExistingFilePath path = new ExistingFilePath
+                        {
+                            Id = Guid.NewGuid(),
+                            FilePath = uniqueFileName,
+                            CarId = cars.Id
+                        };
+
+                        _context.ExistingFilePath.AddAsync(path);
+                    }
+                }
+            }
+
+            return null;
+        }
 
         public async Task<ExistingFilePath> RemoveImage(ExistingFilePathDto dto)
         {
