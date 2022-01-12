@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Shop.Models.Car.CarListItem>
+
+@{
+    int queueNumber = 0;
+}
+
+<div class="h1">
+    Products
+</div>
+
+<div class="">
+    <a asp-action="add" asp-controller="Car" type="submit" class="btn btn-primary">Add</a>
+</div>
+<form method="post" class="m-1">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nr</th>
+                <th scope="col">Mark</th>
+                <th scope="col">Series</th>
+                <th scope="col">Price</th>
+                <th scope="col">Weight</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Car in Model)
+            {
+                queueNumber+= 1;
+
+                <tr>
+                    <th scope="row">@queueNumber</th>
+                    <td class="">@Car.Mark</td>
+                    <td class="">@Car.Series</td>
+                    <td class="">@Car.Price</td>
+                    <td class="">@Car.Weight</td>
+                    <td class="">
+                        <a asp-action="edit" asp-controller="Car" asp-route-id="@Car.Id" class="btn btn-primary">Edit</a>
+                        <input asp-action="delete" asp-controller="Car" asp-route-id="@Car.Id" type="submit" class="btn btn-danger" value="Delete">
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</form>
