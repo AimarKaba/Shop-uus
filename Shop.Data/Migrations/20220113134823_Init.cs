@@ -47,6 +47,23 @@ namespace Shop.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cars",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Mark = table.Column<string>(nullable: true),
+                    Series = table.Column<string>(nullable: true),
+                    Price = table.Column<double>(nullable: false),
+                    Weight = table.Column<double>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cars", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Product",
                 columns: table => new
                 {
@@ -61,6 +78,25 @@ namespace Shop.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Product", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SpaceShips",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Model = table.Column<string>(nullable: true),
+                    Company = table.Column<string>(nullable: true),
+                    EnginePower = table.Column<int>(nullable: false),
+                    Country = table.Column<string>(nullable: true),
+                    LaunchDate = table.Column<DateTime>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpaceShips", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,6 +205,34 @@ namespace Shop.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ExistingFilePath",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    FilePath = table.Column<string>(nullable: true),
+                    ProductId = table.Column<Guid>(nullable: true),
+                    CarId = table.Column<Guid>(nullable: true),
+                    SpaceShipId = table.Column<Guid>(nullable: true),
+                    CarsId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExistingFilePath", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExistingFilePath_Cars_CarsId",
+                        column: x => x.CarsId,
+                        principalTable: "Cars",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExistingFilePath_Product_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -207,6 +271,16 @@ namespace Shop.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExistingFilePath_CarsId",
+                table: "ExistingFilePath",
+                column: "CarsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExistingFilePath_ProductId",
+                table: "ExistingFilePath",
+                column: "ProductId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -227,13 +301,22 @@ namespace Shop.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Product");
+                name: "ExistingFilePath");
+
+            migrationBuilder.DropTable(
+                name: "SpaceShips");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Cars");
+
+            migrationBuilder.DropTable(
+                name: "Product");
         }
     }
 }

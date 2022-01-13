@@ -12,6 +12,7 @@ namespace Shop.Data
         public DbSet<Product> Product { get; set; }
         public DbSet<Cars> Cars { get; set; }
 
+        public DbSet<SpaceShip> SpaceShips { get; set; }
         public DbSet<ExistingFilePath> ExistingFilePath { get; set; }
         //kuidas yhendada aplikatsioon DB-ga
     }
