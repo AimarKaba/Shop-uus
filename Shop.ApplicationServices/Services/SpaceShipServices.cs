@@ -5,9 +5,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shop.Core.ServiceInterface;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Linq;
+using System.IO;
 
 namespace Shop.ApplicationServices.Services
 {
@@ -32,6 +32,7 @@ namespace Shop.ApplicationServices.Services
         public async Task<SpaceShip> Add(SpaceShipDto dto)
         {
             SpaceShip spaceship = new SpaceShip();
+            FileToDatabase file = new FileToDatabase();
 
             spaceship.Id = Guid.NewGuid();
             spaceship.Name = dto.Name;
@@ -41,7 +42,12 @@ namespace Shop.ApplicationServices.Services
             spaceship.Country = dto.Country;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
-            _fileServices.ProcessUploadFile(dto, spaceship);
+
+            if (dto.Files != null)
+            {
+                file.ImageData = UploadFile(dto, spaceship);
+            }
+
 
             await _context.SpaceShips.AddAsync(spaceship);
             await _context.SaveChangesAsync();
@@ -66,7 +72,9 @@ namespace Shop.ApplicationServices.Services
         public async Task<SpaceShip> Update(SpaceShipDto dto)
         {
             SpaceShip spaceship = new SpaceShip();
+            FileToDatabase file = new FileToDatabase();
 
+            spaceship.Id = dto.Id;
             spaceship.Name = dto.Name;
             spaceship.Model = dto.Model;
             spaceship.Company = dto.Company;
@@ -74,7 +82,11 @@ namespace Shop.ApplicationServices.Services
             spaceship.Country = dto.Country;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
-            _fileServices.ProcessUploadFile(dto, spaceship);
+
+            if (dto.Files != null)
+            {
+                file.ImageData = UploadFile(dto, spaceship);
+            }
 
             _context.SpaceShips.Update(spaceship);
             await _context.SaveChangesAsync();
@@ -88,53 +100,32 @@ namespace Shop.ApplicationServices.Services
 
             return result;
         }
+        public byte[] UploadFile(SpaceShipDto dto, SpaceShip spaceship)
+        {
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                foreach (var photo in dto.Files)
+                {
+                    using (var target = new MemoryStream())
+                    {
+                        FileToDatabase objFiles = new FileToDatabase
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageTitle = photo.FileName,
+                            SpaceShipId = spaceship.Id,
+                        };
 
-        //public string ProcessUploadFile(ProductDto dto, Product product)
-        //{
-        //    string uniqueFileName = null;
+                        photo.CopyTo(target);
+                        objFiles.ImageData = target.ToArray();
 
-        //    if(dto.Files != null && dto.Files.Count > 0)
-        //    {
-        //        if(!Directory.Exists(_env.WebRootPath + "\\multipleFileUpload\\"))
-        //        {
-        //            Directory.CreateDirectory(_env.WebRootPath + "\\multipleFileUpload\\");
-        //        }
-
-        //        foreach (var photo in dto.Files)
-        //        {
-        //            string uploadsFolder = Path.Combine(_env.WebRootPath, "multipleFileUpload");
-        //            uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
-        //            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        //            using (var fileStream = new FileStream(filePath, FileMode.Create))
-        //            {
-        //                photo.CopyTo(fileStream);
-
-        //                ExistingFilePath path = new ExistingFilePath
-        //                {
-        //                    Id = Guid.NewGuid(),
-        //                    FilePath = uniqueFileName,
-        //                    ProductId = product.Id
-        //                };
-
-        //                _context.ExistingFilePath.Add(path);
-        //            }
-        //        }
-        //    }
-
-        //    return uniqueFileName;
-        //}
-
-
-        //public async Task<ExistingFilePath> RemoveImage(ExistingFilePathDto dto)
-        //{
-        //    var photoId = await _context.ExistingFilePath
-        //        .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-        //    _context.ExistingFilePath.Remove(photoId);
-        //    await _context.SaveChangesAsync();
-
-        //    return photoId;
-        //}
+                        _context.FileToDatabase.Add(objFiles);
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
+                        
+
+            

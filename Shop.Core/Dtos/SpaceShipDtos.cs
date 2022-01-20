@@ -18,7 +18,9 @@ namespace Shop.Core.Dtos
 
 
         public List<IFormFile> Files { get; set; }
-        public IEnumerable<ExistingFilePathDto> ExistingFilePaths { get; set; }
-            = new List<ExistingFilePathDto>();
+        //public IEnumerable<ExistingFilePathDto> ExistingFilePaths { get; set; }
+        //    = new List<ExistingFilePathDto>();
+         public IEnumerable<FileToDatabaseDto> Image { get; set; }
+            = new List<FileToDatabaseDto>();
     }
 }

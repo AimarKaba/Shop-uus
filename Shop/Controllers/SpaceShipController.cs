@@ -14,18 +14,17 @@ namespace Shop.Controllers
     {
         private readonly ShopDbContext _context;
         private readonly ISpaceShipService _SpaceShipService;
-        private readonly IFileServices _fileServices;
 
         public SpaceShipController
             (
             ShopDbContext context,
-            ISpaceShipService SpaceShipService,
-            IFileServices fileServices
+            ISpaceShipService SpaceShipService
+
             )
         {
             _context = context;
             _SpaceShipService = SpaceShipService;
-            _fileServices = fileServices;
+
         }
 
         //ListItem
@@ -56,23 +55,25 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(SpaceViewModel model)
+        public async Task<IActionResult> Add(SpaceViewModel vm)
         {
             var dto = new SpaceShipDto()
             {
-                Id = model.Id,
-                Name = model.Name,
-                Model = model.Model,
-                Company = model.Company,
-                EnginePower = model.EnginePower,
-                Country = model.Country,
-                LaunchDate = model.LaunchDate,
-                CreatedAt = model.CreatedAt,
-                ModifiedAt = model.ModifiedAt,
-                Files = model.Files,
-                ExistingFilePaths = model.ExistingFilePaths.Select(x => new ExistingFilePathDto
+                Id = vm.Id,
+                Name = vm.Name,
+                Model = vm.Model,
+                Company = vm.Company,
+                EnginePower = vm.EnginePower,
+                Country = vm.Country,
+                LaunchDate = vm.LaunchDate,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt,
+                Image = vm.Image.Select(x => new FileToDatabaseDto
                 {
-                    
+                    Id = x.Id,
+                    ImageData = x.ImageData,
+                    ImageTitle = x.ImageTitle,
+                    SpaceShipId = x.SpaceShipId
                 }).ToArray()
             };
 
@@ -83,7 +84,7 @@ namespace Shop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction("Index", model);
+            return RedirectToAction("Index", vm);
         }
 
         [HttpPost]
@@ -108,40 +109,57 @@ namespace Shop.Controllers
             {
                 return NotFound();
             }
+            var photos = await _context.FileToDatabase
+                .Where(x => x.SpaceShipId == id)
+                .Select(y => new ImageViewModel
+                {
+                    ImageData = y.ImageData,
+                    Id = y.Id,
+                    Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData)),
+                    ImageTitle = y.ImageTitle,
+                    SpaceShipId = y.Id
+                }).ToArrayAsync();
+                
 
-            var model = new SpaceViewModel();
+            var vm = new SpaceViewModel();
 
-            model.Id = spaceship.Id;
-            model.Name = spaceship.Name;
-            model.Model = spaceship.Model;
-            model.Company = spaceship.Company;
-            model.EnginePower = spaceship.EnginePower;
-            model.Country = spaceship.Country;
-            model.LaunchDate = spaceship.LaunchDate;
-            model.ModifiedAt = spaceship.ModifiedAt;
-            model.CreatedAt = spaceship.CreatedAt;
+            vm.Id = spaceship.Id;
+            vm.Name = spaceship.Name;
+            vm.Model = spaceship.Model;
+            vm.Company = spaceship.Company;
+            vm.EnginePower = spaceship.EnginePower;
+            vm.Country = spaceship.Country;
+            vm.LaunchDate = spaceship.LaunchDate;
+            vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.CreatedAt = spaceship.CreatedAt;
+            vm.Image.AddRange(photos);
             
 
-            return View(model);
+            return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(SpaceViewModel model)
+        public async Task<IActionResult> Edit(SpaceViewModel vm)
         {
             var dto = new SpaceShipDto()
             {
-                Id = model.Id,
-                Name = model.Name,
-                Model = model.Model,
-                Company = model.Company,
-                EnginePower = model.EnginePower,
-                Country = model.Country,
-                LaunchDate = model.LaunchDate,
-                CreatedAt = model.CreatedAt,
-                ModifiedAt = model.ModifiedAt,
-                Files = model.Files,
-                
-                    
+                Id = vm.Id,
+                Name = vm.Name,
+                Model = vm.Model,
+                Company = vm.Company,
+                EnginePower = vm.EnginePower,
+                Country = vm.Country,
+                LaunchDate = vm.LaunchDate,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt,
+                Files = vm.Files,
+                Image = vm.Image.Select(x => new FileToDatabaseDto 
+                {
+                  Id = x.Id,
+                  ImageData = x.ImageData,
+                  ImageTitle = x.ImageTitle,
+                  SpaceShipId = x.SpaceShipId,
+                })
             };
 
             var result = await _SpaceShipService.Update(dto);
@@ -151,7 +169,7 @@ namespace Shop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index), model);
+            return RedirectToAction(nameof(Index), vm);
         }
 
     }
