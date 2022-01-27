@@ -27,6 +27,10 @@ namespace Shop.Models.SpaceShip
     public class ExistingFilePathViewModel
     {
         public Guid PhotoId { get; set; }
+        public byte[] ImageData { get; set; }
+        public string ImageTitle { get; set; }
+        public Guid? SpaceShipId { get; set; }
+
         public string FilePath { get; set; }
         public Guid ProductId { get; set; }
     }

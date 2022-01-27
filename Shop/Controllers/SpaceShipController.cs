@@ -71,7 +71,7 @@ namespace Shop.Controllers
                 Files = vm.Files,
                 Image = vm.Image.Select(x => new FileToDatabaseDto
                 {
-                    Id = x.Id,
+                    Id = x.ImageId,
                     ImageData = x.ImageData,
                     ImageTitle = x.ImageTitle,
                     SpaceShipId = x.SpaceShipId
@@ -115,7 +115,7 @@ namespace Shop.Controllers
                 .Select(y => new ImageViewModel
                 {
                     ImageData = y.ImageData,
-                    Id = y.Id,
+                    ImageId = y.Id,
                     Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData)),
                     ImageTitle = y.ImageTitle,
                     SpaceShipId = y.Id
@@ -156,7 +156,7 @@ namespace Shop.Controllers
                 Files = vm.Files,
                 Image = vm.Image.Select(x => new FileToDatabaseDto 
                 {
-                  Id = x.Id,
+                  Id = x.ImageId,
                   ImageData = x.ImageData,
                   ImageTitle = x.ImageTitle,
                   SpaceShipId = x.SpaceShipId,
@@ -172,7 +172,22 @@ namespace Shop.Controllers
 
             return RedirectToAction(nameof(Index), vm);
         }
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(ImageViewModel vm)
+        {
+            var dto = new FileToDatabaseDto()
+            {
+                Id = vm.ImageId
+            };
 
+            var photo = await _SpaceShipService.RemoveImage(dto);
+            if (photo == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
 
