@@ -62,7 +62,7 @@ namespace Shop.ApplicationServices.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
 
 
-            _context.SpaceShips.Remove(SpaceShipId);
+             _context.SpaceShips.Remove(SpaceShipId);
             await _context.SaveChangesAsync();
 
             return SpaceShipId;
@@ -123,16 +123,6 @@ namespace Shop.ApplicationServices.Services
                 }
             }
             return null;
-        }
-        public async Task<FileToDatabase> RemoveImage(FileToDatabase dto)
-        {
-            var image = await _context.FileToDatabase
-                .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-            _context.FileToDatabase.Remove(image);
-            await _context.SaveChangesAsync();
-
-            return image;
         }
     }
 }

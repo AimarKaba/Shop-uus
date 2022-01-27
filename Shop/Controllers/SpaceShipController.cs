@@ -172,20 +172,7 @@ namespace Shop.Controllers
 
             return RedirectToAction(nameof(Index), vm);
         }
-        [HttpPost]
-        public async Task<IActionResult> RemoveImage(FileToDatabaseDto file)
-        {
-            var dto = new FileToDatabaseDto()
-            {
-                Id = file.Id
-            };
-            var image = await _SpaceShipService.RemoveImage(dto);
-            if (image == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            return RedirectToAction(nameof(Index));
-        }
+
     }
 }
 
