@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Shop.Core.Domain;
+using Shop.Core.Dto;
 using Shop.Core.Dtos;
 using Shop.Core.ServiceInterface;
 using Shop.Data;
@@ -62,76 +63,7 @@ namespace Shop.ApplicationServices.Services
 
             return null;
         }
-        public string ProcessUploadFile(CarsDto dto, Cars cars)
-        {
-            string uniqueFileName = null;
 
-            if (dto.Files != null && dto.Files.Count > 0)
-            {
-                if (!Directory.Exists(_env.WebRootPath + "\\multipleFileUpload\\"))
-                {
-                    Directory.CreateDirectory(_env.WebRootPath + "\\multipleFileUpload\\");
-                }
-
-                foreach (var photo in dto.Files)
-                {
-                    string uploadsFolder = Path.Combine(_env.WebRootPath, "multipleFileUpload");
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        photo.CopyTo(fileStream);
-
-                        ExistingFilePath path = new ExistingFilePath
-                        {
-                            Id = Guid.NewGuid(),
-                            FilePath = uniqueFileName,
-                            CarId = cars.Id
-                        };
-
-                        _context.ExistingFilePath.AddAsync(path);
-                    }
-                }
-            }
-
-            return null;
-        }
-        public string ProcessUploadFile(SpaceShipDto dto, SpaceShip cars)
-        {
-            string uniqueFileName = null;
-
-            if (dto.Files != null && dto.Files.Count > 0)
-            {
-                if (!Directory.Exists(_env.WebRootPath + "\\multipleFileUpload\\"))
-                {
-                    Directory.CreateDirectory(_env.WebRootPath + "\\multipleFileUpload\\");
-                }
-
-                foreach (var photo in dto.Files)
-                {
-                    string uploadsFolder = Path.Combine(_env.WebRootPath, "multipleFileUpload");
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        photo.CopyTo(fileStream);
-
-                        ExistingFilePath path = new ExistingFilePath
-                        {
-                            Id = Guid.NewGuid(),
-                            FilePath = uniqueFileName,
-                            CarId = cars.Id
-                        };
-
-                        _context.ExistingFilePath.AddAsync(path);
-                    }
-                }
-            }
-
-            return null;
-        }
 
         public async Task<ExistingFilePath> RemoveImage(ExistingFilePathDto dto)
         {
@@ -169,6 +101,18 @@ namespace Shop.ApplicationServices.Services
                 await _context.SaveChangesAsync();
             }
             return null;
+        }
+
+        public async Task<FileToDatabase> RemoveImageDB(FileToDatabaseDto dto)
+        {
+            var imageId = await _context.FileToDatabase
+                //.Where(x => x.Id == dto.Id)
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+            _context.FileToDatabase.Remove(imageId);
+            await _context.SaveChangesAsync();
+
+            return imageId;
         }
     }
 }

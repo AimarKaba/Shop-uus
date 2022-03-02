@@ -10,9 +10,8 @@ namespace Shop.Data
             : base(options) { }
 
         public DbSet<Product> Product { get; set; }
-        public DbSet<Cars> Cars { get; set; }
+        public DbSet<Spaceship> Spaceship { get; set; }
 
-        public DbSet<SpaceShip> SpaceShips { get; set; }
         public DbSet<ExistingFilePath> ExistingFilePath { get; set; }
         public DbSet<FileToDatabase> FileToDatabase { get; set; }
         //kuidas yhendada aplikatsioon DB-ga

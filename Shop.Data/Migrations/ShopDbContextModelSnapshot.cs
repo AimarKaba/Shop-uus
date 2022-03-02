@@ -215,45 +215,10 @@ namespace Shop.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Shop.Core.Domain.Cars", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Mark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Series")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cars");
-                });
-
             modelBuilder.Entity("Shop.Core.Domain.ExistingFilePath", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CarId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CarsId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FilePath")
@@ -262,12 +227,7 @@ namespace Shop.Data.Migrations
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("SpaceShipId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CarsId");
 
                     b.HasIndex("ProductId");
 
@@ -286,7 +246,7 @@ namespace Shop.Data.Migrations
                     b.Property<string>("ImageTitle")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SpaceShipId")
+                    b.Property<Guid?>("SpaceshipId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -323,7 +283,7 @@ namespace Shop.Data.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Shop.Core.Domain.SpaceShip", b =>
+            modelBuilder.Entity("Shop.Core.Domain.Spaceship", b =>
                 {
                     b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
@@ -355,7 +315,7 @@ namespace Shop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SpaceShips");
+                    b.ToTable("Spaceship");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -411,10 +371,6 @@ namespace Shop.Data.Migrations
 
             modelBuilder.Entity("Shop.Core.Domain.ExistingFilePath", b =>
                 {
-                    b.HasOne("Shop.Core.Domain.Cars", null)
-                        .WithMany("ExistingFilePaths")
-                        .HasForeignKey("CarsId");
-
                     b.HasOne("Shop.Core.Domain.Product", null)
                         .WithMany("ExistingFilePaths")
                         .HasForeignKey("ProductId");

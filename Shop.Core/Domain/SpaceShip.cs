@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Shop.Core.Domain
 {
-    public class SpaceShip
+    public class Spaceship
     {
         [Key]
         public Guid? Id { get; set; }
@@ -17,7 +17,5 @@ namespace Shop.Core.Domain
         public DateTime LaunchDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
-        public IEnumerable<FileToDatabase> FiletoDataBases { get; set; }
-    = new List<FileToDatabase>();
     }
 }

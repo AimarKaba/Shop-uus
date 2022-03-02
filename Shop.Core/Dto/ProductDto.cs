@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Shop.Core.Dtos
+namespace Shop.Core.Dto
 {
     public class ProductDto
     {

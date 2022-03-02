@@ -34,9 +34,9 @@ namespace Shop
 
 
             services.AddScoped<IProductService, ProductServices>();
-            services.AddScoped<ICarService, CarServices>();
             services.AddScoped<IFileServices, FileServices>();
-            services.AddScoped<ISpaceShipService, SpaceShipServices>();
+            services.AddScoped<ISpaceshipService, SpaceshipServices>();
+            services.AddScoped<IWeatherForecastServices, WeatherForecastServices>();
 
             services.AddControllersWithViews();
         }

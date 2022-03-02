@@ -1,37 +1,31 @@
-﻿using Shop.Core.Domain;
-using Shop.Core.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using Shop.Core.Domain;
+using Shop.Core.Dto;
+using Shop.Core.ServiceInterface;
 using Shop.Data;
 using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Shop.Core.ServiceInterface;
-using Microsoft.AspNetCore.Hosting;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shop.ApplicationServices.Services
 {
-    public class SpaceShipServices : ISpaceShipService
+    public class SpaceshipServices : ISpaceshipService
     {
         private readonly ShopDbContext _context;
-        private readonly IWebHostEnvironment _env;
-        private readonly IFileServices _fileServices;
 
-        public SpaceShipServices
+
+        public SpaceshipServices
             (
-            ShopDbContext context,
-            IWebHostEnvironment env,
-            IFileServices fileServices
+            ShopDbContext context
             )
         {
             _context = context;
-            _env = env;
-            _fileServices = fileServices;
         }
 
-        public async Task<SpaceShip> Add(SpaceShipDto dto)
+        public async Task<Spaceship> Add(SpaceshipDto dto)
         {
-            SpaceShip spaceship = new SpaceShip();
+            Spaceship spaceship = new Spaceship();
             FileToDatabase file = new FileToDatabase();
 
             spaceship.Id = Guid.NewGuid();
@@ -40,6 +34,7 @@ namespace Shop.ApplicationServices.Services
             spaceship.Company = dto.Company;
             spaceship.EnginePower = dto.EnginePower;
             spaceship.Country = dto.Country;
+            spaceship.LaunchDate = dto.LaunchDate;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
 
@@ -48,30 +43,27 @@ namespace Shop.ApplicationServices.Services
                 file.ImageData = UploadFile(dto, spaceship);
             }
 
-
-            await _context.SpaceShips.AddAsync(spaceship);
+            await _context.Spaceship.AddAsync(spaceship);
             await _context.SaveChangesAsync();
-
             return spaceship;
         }
 
 
-        public async Task<SpaceShip> Delete(Guid id)
+        public async Task<Spaceship> Delete(Guid id)
         {
-            var SpaceShipId = await _context.SpaceShips
+            var spaceshipId = await _context.Spaceship
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-
-             _context.SpaceShips.Remove(SpaceShipId);
+            _context.Spaceship.Remove(spaceshipId);
             await _context.SaveChangesAsync();
 
-            return SpaceShipId;
+            return spaceshipId;
         }
 
 
-        public async Task<SpaceShip> Update(SpaceShipDto dto)
+        public async Task<Spaceship> Update(SpaceshipDto dto)
         {
-            SpaceShip spaceship = new SpaceShip();
+            Spaceship spaceship = new Spaceship();
             FileToDatabase file = new FileToDatabase();
 
             spaceship.Id = dto.Id;
@@ -80,7 +72,8 @@ namespace Shop.ApplicationServices.Services
             spaceship.Company = dto.Company;
             spaceship.EnginePower = dto.EnginePower;
             spaceship.Country = dto.Country;
-            spaceship.CreatedAt = DateTime.Now;
+            spaceship.LaunchDate = dto.LaunchDate;
+            spaceship.CreatedAt = dto.CreatedAt;
             spaceship.ModifiedAt = DateTime.Now;
 
             if (dto.Files != null)
@@ -88,19 +81,20 @@ namespace Shop.ApplicationServices.Services
                 file.ImageData = UploadFile(dto, spaceship);
             }
 
-            _context.SpaceShips.Update(spaceship);
+            _context.Spaceship.Update(spaceship);
             await _context.SaveChangesAsync();
             return spaceship;
         }
 
-        public async Task<SpaceShip> GetAsync(Guid id)
+        public async Task<Spaceship> GetAsync(Guid id)
         {
-            var result = await _context.SpaceShips
+            var result = await _context.Spaceship
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return result;
         }
-        public byte[] UploadFile(SpaceShipDto dto, SpaceShip spaceship)
+
+        public byte[] UploadFile(SpaceshipDto dto, Spaceship spaceship)
         {
             if (dto.Files != null && dto.Files.Count > 0)
             {
@@ -112,7 +106,7 @@ namespace Shop.ApplicationServices.Services
                         {
                             Id = Guid.NewGuid(),
                             ImageTitle = photo.FileName,
-                            SpaceShipId = spaceship.Id,
+                            SpaceshipId = spaceship.Id
                         };
 
                         photo.CopyTo(target);
@@ -124,19 +118,17 @@ namespace Shop.ApplicationServices.Services
             }
             return null;
         }
-        public async Task<FileToDatabase> RemoveImage(FileToDatabaseDto dto)
-        { 
-            var ImageId = await _context.FileToDatabase
-                .Where(x => x.Id == dto.Id)
-                .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
-            _context.FileToDatabase.Remove(ImageId);
+        public async Task<FileToDatabase> RemoveImage(FileToDatabaseDto dto)
+        {
+            var imageId = await _context.FileToDatabase
+                .Where(x => x.Id == dto.Id)
+                .FirstOrDefaultAsync();
+
+            _context.FileToDatabase.Remove(imageId);
             await _context.SaveChangesAsync();
 
-            return ImageId;
+            return imageId;
         }
     }
 }
-                        
-
-            
