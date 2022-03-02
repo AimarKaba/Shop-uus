@@ -54,12 +54,12 @@ else
 
         @if (Model.Id.HasValue)
         {
-            <input asp-action="edit" asp-controller="Cars" type="submit" class="btn btn-primary" value="Update">
-            <input asp-action="delete" asp-controller="Cars" asp-for="Id" type="submit" class="btn btn-danger" value="Delete">
+            <input asp-action="edit" asp-controller="Car" type="submit" class="btn btn-primary" value="Update">
+            <input asp-action="delete" asp-controller="Car" asp-for="Id" type="submit" class="btn btn-danger" value="Delete">
         }
         else
         {
-            <input asp-action="add" asp-controller="Cars" type="submit" class="btn btn-primary" value="Add">
+            <input asp-action="add" asp-controller="Car" type="submit" class="btn btn-primary" value="Add">
         }
         <a asp-action="index" class="btn btn-primary">Index</a>
 
